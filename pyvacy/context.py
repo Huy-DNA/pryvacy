@@ -1,27 +1,23 @@
-from typing import Optional, Type
+from typing import Type
 
+globals()["@@_current_class"] = []
 
-def _get_cls_ctx() -> Optional[Type]:
-    try:
-        return globals()["@@current_class"]
-    except:
-        return None
+def _push_cls_ctx(cls: Type):
+    globals()["@@_current_class"].append(cls)
 
-def _set_cls_ctx(cls: Optional[Type]):
-    globals()["@@current_class"] = cls
+def _pop_cls_ctx() -> Type:
+    return globals()["@@_current_class"].pop()
 
-def get_current_cls():
-    return _get_cls_ctx()
+def get_current_class() -> Type:
+    return globals()["@@_current_class"][-1]
 
 class ClassContextManager():
     def __init__(self, cls: Type):
         self.cls = cls
-        self.old_cls = None
 
     def __enter__(self):
-        self.old_cls = _get_cls_ctx()        
-        _set_cls_ctx(self.cls)
+        _push_cls_ctx(self.cls)
     
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        self.cls = self.old_cls 
+        _pop_cls_ctx()
         return True
