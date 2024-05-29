@@ -1,11 +1,22 @@
 # pyvacy - a set of access control decorators for python
 
+## Usage
+
 ## Philosophy
 
 * Incur as least overhead as possible when using the access control decorators 
 
-## Current limitation
+## Current limitations
 
-* Still very slow - a lot is going on when calling the decorated methods
-* Still not handle metaprogramming correctly - for example, if a method modify a `<class>.__dict__`
-* Still not support class methods, static methods, class attributes and instance attributes
+* `@private` and `@protected` are not supported on nested classes yet.
+
+* No way to enforce access policy on class and instance attributes.
+
+## Roadmap
+
+* Benchmark decorated classes
+
+* Test comprehensively the decorators interaction with the whole ecosystem
+
+* Implement @private and @protected on nested classes
+
