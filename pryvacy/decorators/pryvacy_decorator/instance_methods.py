@@ -11,7 +11,7 @@ def init(cls: Type):
     for name, _method in normal_methods.items():
         match get_access_policy(_method):
             case AccessPolicy.PUBLIC:
-                def _local_public():
+                def _local_private():
                     method = _method
                     def public_method(self, *args, **kwargs):
                         try:
@@ -22,10 +22,10 @@ def init(cls: Type):
 
                     return public_method
 
-                setattr(cls, name, _local_public())
+                setattr(cls, name, _local_private())
 
             case AccessPolicy.PRIVATE:
-                def _local_public():
+                def _local_private():
                     method = _method
                     def private_method(self, *args, **kwargs):
                         current_class = get_current_class()
@@ -40,7 +40,7 @@ def init(cls: Type):
 
                     return private_method
 
-                setattr(cls, name, _local_public())
+                setattr(cls, name, _local_private())
 
             case AccessPolicy.PROTECTED:
                 def _local_protected():
