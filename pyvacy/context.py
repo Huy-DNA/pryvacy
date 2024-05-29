@@ -1,6 +1,7 @@
 from typing import Type
 
-setattr(globals(), "@@_current_class", None)
+globals = globals()
+globals["@@_current_class"] = None
 
 last_cls = None
 
@@ -10,11 +11,11 @@ def set_cls_ctx(cls: Type, override = False):
     
     global last_cls
     last_cls = get_current_class()
-    setattr(globals(), "@@_current_class", cls)
+    globals["@@_current_class"] = cls
 
 def reset_cls_ctx():
-    setattr(globals(), "@@_current_class", last_cls)
+    globals["@@_current_class"] = last_cls
 
 def get_current_class() -> Type:
-    return getattr(globals(), "@@_current_class")
+    return globals["@@_current_class"]
 
