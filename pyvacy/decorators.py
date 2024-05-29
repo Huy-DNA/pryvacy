@@ -13,6 +13,10 @@ class AccessPolicy(Enum):
     PRIVATE = 2
 
 def pyvacy(cls: Type[T]) -> Type[T]:
+    if "@@_pyvacified" in pyvacy.__dict__:
+        return cls
+    setattr(cls, "@@_pyvacified", ())
+
     normal_methods = { name: method for name, method in inspect.getmembers(cls, inspect.isfunction) if not name.startswith("__") }
     
     for name, _method in normal_methods.items():
@@ -51,8 +55,9 @@ def pyvacy(cls: Type[T]) -> Type[T]:
                     def protected_method(self, *args, **kwargs):
                         try:
                             assert issubclass(get_current_class(), cls) 
-                        except:
+                        except Exception:
                             raise Exception(f"'{name}' method of {cls.__name__} is marked as protected")
+
                         _switch_dict(cls, exposed_dict, origin_dict)
                         result = method(self, *args, **kwargs)
                         _switch_dict(cls, origin_dict, exposed_dict)
