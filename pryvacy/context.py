@@ -1,21 +1,18 @@
-from typing import Type
+from typing import Optional, Type
 
 globals = globals()
-globals["@@_current_class"] = None
+globals["@@_current_class"] = []
 
 last_cls = None
 
-def set_cls_ctx(cls: Type, override = False):
-    if not override and get_current_class():
-        return
-    
-    global last_cls
-    last_cls = get_current_class()
-    globals["@@_current_class"] = cls
+def push_cls_ctx(cls: Type):
+    globals["@@_current_class"].append(cls)
 
-def reset_cls_ctx():
-    globals["@@_current_class"] = last_cls
+def pop_cls_ctx():
+    globals["@@_current_class"].pop()
 
-def get_current_class() -> Type:
-    return globals["@@_current_class"]
+def get_current_class() -> Optional[Type]:
+    if globals["@@_current_class"]:
+        return globals["@@_current_class"][-1]
+    return None
 

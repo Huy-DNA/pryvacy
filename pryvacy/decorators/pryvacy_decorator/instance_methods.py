@@ -2,13 +2,12 @@ import inspect
 from typing import Type
 
 from pryvacy.access_policy import AccessPolicy
-from pryvacy.context import reset_cls_ctx, set_cls_ctx, get_current_class
+from pryvacy.context import pop_cls_ctx, push_cls_ctx, get_current_class
 from pryvacy.decorators.utils import get_access_policy 
 
 
 def init(cls: Type):
     normal_methods = { name: method for name, method in inspect.getmembers(cls, inspect.isfunction) if not name.startswith("__") }
-    
     for name, _method in normal_methods.items():
         match get_access_policy(_method):
             case AccessPolicy.PUBLIC:
@@ -16,10 +15,10 @@ def init(cls: Type):
                     method = _method
                     def public_method(self, *args, **kwargs):
                         try:
-                            set_cls_ctx(cls)
+                            push_cls_ctx(cls)
                             return method(self, *args, **kwargs)
                         finally:
-                            reset_cls_ctx()
+                            pop_cls_ctx()
 
                     return public_method
 
@@ -34,10 +33,10 @@ def init(cls: Type):
                             raise Exception(f"'{name}' method of {cls.__name__} is marked as private")
 
                         try:
-                            set_cls_ctx(cls)
+                            push_cls_ctx(cls)
                             return method(self, *args, **kwargs)
                         finally:
-                            reset_cls_ctx()
+                            pop_cls_ctx()
 
                     return private_method
 
@@ -52,10 +51,10 @@ def init(cls: Type):
                             raise Exception(f"'{name}' method of {cls.__name__} is marked as protected")
 
                         try:
-                            set_cls_ctx(cls)
+                            push_cls_ctx(cls)
                             return method(self, *args, **kwargs)
                         finally:
-                            reset_cls_ctx()
+                            pop_cls_ctx()
 
                     return protected_method
 
