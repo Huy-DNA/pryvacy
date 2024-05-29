@@ -49,6 +49,12 @@ class Derived(Base):
     def public_method_call_base_protected_method_call_public_method(self):
         return self.protected_method_call_public_method()
 
+@pyvacy
+class Underived():
+    @public
+    def public_method_call_protected_method(self):
+        return Base().annotated_protected_method()
+
 def test_public_methods():
     test = Base()
     assert test.annotated_public_method() == "This is a public method annotated with @public"
@@ -73,3 +79,7 @@ def test_protected_methods():
 def test_derived():
     test = Derived()
     assert test.public_method_call_base_annotated_protected_method() == "This is a protected method annotated with @protected"
+
+def test_underived():
+    test = Underived()
+    assert test.public_method_call_protected_method()

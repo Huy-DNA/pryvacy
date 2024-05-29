@@ -36,12 +36,11 @@ def pyvacy(cls: Type[T]) -> Type[T]:
                 case AccessPolicy.PROTECTED:
                     def _local_protected():
                         method = _method
-                        __class__ = cls
                         def protected_method(self, *args, **kwargs):
                             try:
-                                super()
-                                assert isinstance(self, cls)
-                            except Exception as e:
+                                # TODO: correctly implement the check logic here
+                                pass 
+                            except Exception:
                                 raise Exception(f"'{_name}' method of {cls.__name__} is marked as protected")
                             _switch_dict(cls, exposed_dict, origin_dict)
                             result = method(self, *args, **kwargs)
