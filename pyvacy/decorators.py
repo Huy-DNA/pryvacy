@@ -14,26 +14,25 @@ class AccessPolicy(Enum):
 
 def pyvacy(cls: Type[T]) -> Type[T]:
     with ClassContextManager(cls):
-        normal_methods = { name: method for name, method in inspect.getmembers(cls, inspect.ismethod) if not name.startswith("__") }
-        cls.__dict__["@@original_methods"] = normal_methods
+        normal_methods = { name: method for name, method in inspect.getmembers(cls, inspect.isfunction) if not name.startswith("__") }
+        origin_dict = cls.__dict__.copy() 
 
         for name, method in normal_methods.items():
-            del cls.__dict__[name]
-
             match _get_access_policy(method):
                 case AccessPolicy.PUBLIC:
                     def public_method(*args, **kwargs):
                         old_dict = cls.__dict__.copy()
-                        cls.__dict__.update(cls.__dict__["@@original_methods"])
+                        cls.__dict__ = origin_dict
                         method(*args, **kwargs)
                         cls.__dict__ = old_dict
-                    cls.__dict__[name] = public_method
+                    setattr(cls, name, public_method)
                         
                 case AccessPolicy.PRIVATE:
-                    continue
+                    delattr(cls, name)
 
                 case AccessPolicy.PROTECTED:
-                    continue
+                    # TODO: Implement this correctly
+                    delattr(cls, name)
 
     return cls
 
