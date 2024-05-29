@@ -39,10 +39,10 @@ def test():
         def protected_method_call_public_method(self):
             return self.annotated_public_method()
     
-    global Derived
+    global PyvacifiedDerived
     
     @pyvacy
-    class Derived(Base):
+    class PyvacifiedDerived(Base):
         @public
         def public_method_call_base_annotated_protected_method(self):
             return self.annotated_protected_method()
@@ -54,8 +54,19 @@ def test():
         @public
         def public_method_call_base_protected_method_call_public_method(self):
             return self.protected_method_call_public_method()
-    
 
+    global BareDerived
+    
+    class BareDerived(Base):
+        def public_method_call_base_annotated_protected_method(self):
+            return self.annotated_protected_method()
+
+        def public_method_call_base_protected_method_call_private_method(self):
+            return self.protected_method_call_private_method()
+
+        def public_method_call_base_protected_method_call_public_method(self):
+            return self.protected_method_call_public_method()
+    
     global Underived
 
     @pyvacy
@@ -104,8 +115,12 @@ def test_protected_methods():
     except Exception as e:
         assert f"{e}" == "'public_method_call_protected_method' method of Base is marked as protected"
 
-def test_derived():
-    test = Derived()
+def test_pivacified_derived():
+    test = PyvacifiedDerived()
+    assert test.public_method_call_base_annotated_protected_method() == "This is a protected method annotated with @protected"
+
+def test_bare_derived():
+    test = BareDerived()
     assert test.public_method_call_base_annotated_protected_method() == "This is a protected method annotated with @protected"
 
 def test_underived():
