@@ -38,7 +38,8 @@ def init(cls: Type):
                     method = _method
                     def protected_method(self, *args, **kwargs):
                         try:
-                            assert issubclass(get_current_class(), cls) 
+                            current_class = get_current_class()
+                            assert current_class and issubclass(current_class, cls) 
                         except Exception:
                             raise Exception(f"'{name}' method of {cls.__name__} is marked as protected")
 
