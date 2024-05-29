@@ -14,16 +14,26 @@ class AccessPolicy(Enum):
 
 def pyvacy(cls: Type[T]) -> Type[T]:
     with ClassContextManager(cls):
-        normal_methods = [method for name, method in inspect.getmembers(cls, inspect.ismethod) if not name.startswith("__")]
+        normal_methods = { name: method for name, method in inspect.getmembers(cls, inspect.ismethod) if not name.startswith("__") }
+        cls.__dict__["@@original_methods"] = normal_methods
 
-        for method in normal_methods:
+        for name, method in normal_methods.items():
+            del cls.__dict__[name]
+
             match _get_access_policy(method):
                 case AccessPolicy.PUBLIC:
-                    continue
+                    def public_method(*args, **kwargs):
+                        old_dict = cls.__dict__.copy()
+                        cls.__dict__.update(cls.__dict__["@@original_methods"])
+                        method(*args, **kwargs)
+                        cls.__dict__ = old_dict
+                    cls.__dict__[name] = public_method
+                        
                 case AccessPolicy.PRIVATE:
-                    pass
+                    continue
+
                 case AccessPolicy.PROTECTED:
-                    pass
+                    continue
 
     return cls
 
@@ -48,5 +58,5 @@ def _get_access_policy(fn: Callable) -> AccessPolicy:
 def _set_access_policy(fn: Callable, access_policy: AccessPolicy):
     fn.__dict__["@@_access_control"] = access_policy
 
-def _mangle_method_name(cls: Type, fn: Callable) -> str:
-    return f"@@_${cls.__name__}__${fn.__name__}"
+def _mangle_method_name(cls: Type, fn: Callable, access_policy: AccessPolicy) -> str:
+    return f"@@_${cls.__name__}__${fn.__name__}__${access_policy}"
