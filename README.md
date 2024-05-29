@@ -43,17 +43,17 @@ Access control rules:
 
 Disclaimer: The package has not been tested thoroughly! Use with caution! Any contributions are appreciated~
 
-Currently, class-level code cannot access `protected_method` and `private_method`.
-
-Example:
+1. Currently, class-level code cannot access `protected_method` and `private_method`.
+   Example:
 ```python
-  class Foo():
-    ...
-    class Bar(Foo):
-      Foo().public_method() # OK!
-      Foo().protected_method() # Exception!
-      Foo().private_method() # Exception!
+    class Foo():
+        ...
+        class Bar(Foo):
+            Foo().public_method() # OK!
+            Foo().protected_method() # Exception!
+            Foo().private_method() # Exception!
 ```
+2. The `test_back_and_forth` test is failing. This scenario is unlikely to happen but I will try to come up with a performant solution.
 
 ## Current limitations
 
