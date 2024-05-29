@@ -11,10 +11,6 @@ def _get_cls_ctx() -> Optional[Type]:
 def _set_cls_ctx(cls: Optional[Type]):
     globals()["@@current_class"] = cls
 
-def is_method(fn: Callable) -> bool:
-    cls = _get_cls_ctx()
-    return fn in [method for _, method in inspect.getmembers(cls, inspect.ismethod)]
-
 def get_current_cls():
     return _get_cls_ctx()
 

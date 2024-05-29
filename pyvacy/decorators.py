@@ -3,7 +3,7 @@ from enum import Enum
 
 from typing import Callable, TypeVar, Type
 
-from pyvacy.context import is_method
+from pyvacy.context import ClassContextManager
 
 T = TypeVar('T')
 
@@ -13,39 +13,31 @@ class AccessPolicy(Enum):
     PRIVATE = 2
 
 def pyvacy(cls: Type[T]) -> Type[T]:
-    normal_methods = [method for name, method in inspect.getmembers(cls, inspect.ismethod) if not name.startswith("__")]
+    with ClassContextManager(cls):
+        normal_methods = [method for name, method in inspect.getmembers(cls, inspect.ismethod) if not name.startswith("__")]
 
-    for method in normal_methods:
-        match _get_access_policy(method):
-            case AccessPolicy.PUBLIC:
-                continue
-            case AccessPolicy.PRIVATE:
-                pass
-            case AccessPolicy.PROTECTED:
-                pass
+        for method in normal_methods:
+            match _get_access_policy(method):
+                case AccessPolicy.PUBLIC:
+                    continue
+                case AccessPolicy.PRIVATE:
+                    pass
+                case AccessPolicy.PROTECTED:
+                    pass
 
     return cls
 
 def private(fn: Callable) -> Callable:
-    if not is_method(fn):
-        raise Exception("Can not mark a non-method as private") 
-    
     _set_access_policy(fn, AccessPolicy.PRIVATE)
 
     return fn
 
 def public(fn: Callable) -> Callable:
-    if not is_method(fn):
-        raise Exception("Can not mark a non-method as public")
-
     _set_access_policy(fn, AccessPolicy.PUBLIC)
 
     return fn
 
 def protected(fn: Callable) -> Callable:
-    if not is_method(fn):
-        raise Exception("Can not mark a non-method as protected")
-
     _set_access_policy(fn, AccessPolicy.PROTECTED)
 
     return fn
