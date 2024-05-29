@@ -1,1 +1,1 @@
-
+from pyvacy.decorators import *
