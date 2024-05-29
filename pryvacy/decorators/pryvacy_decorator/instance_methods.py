@@ -29,10 +29,8 @@ def init(cls: Type):
                 def _local_public():
                     method = _method
                     def private_method(self, *args, **kwargs):
-                        try:
-                            current_class = get_current_class()
-                            assert current_class and (current_class == cls or cls.__dict__[current_class.__name__] == current_class)
-                        except Exception:
+                        current_class = get_current_class()
+                        if not current_class or not (current_class == cls or cls.__dict__.get(current_class.__name__, None) == current_class):
                             raise Exception(f"'{name}' method of {cls.__name__} is marked as private")
 
                         try:
@@ -49,10 +47,8 @@ def init(cls: Type):
                 def _local_protected():
                     method = _method
                     def protected_method(self, *args, **kwargs):
-                        try:
-                            current_class = get_current_class()
-                            assert current_class and (issubclass(current_class, cls) or cls.__dict__[current_class.__name__] == current_class)
-                        except Exception:
+                        current_class = get_current_class()
+                        if not current_class or not (issubclass(current_class, cls) or cls.__dict__.get(current_class.__name__, None) == current_class):
                             raise Exception(f"'{name}' method of {cls.__name__} is marked as protected")
 
                         try:
