@@ -117,10 +117,16 @@ def test_protected_methods():
 def test_pivacified_derived():
     test = PyvacifiedDerived()
     assert test.public_method_call_base_annotated_protected_method() == "This is a protected method annotated with @protected"
+    assert test.public_method_call_protected_method() == "This is a protected method annotated with @protected"
+    assert test.public_method_call_base_protected_method_call_private_method() == "This is a private method annotated with @private"
+    assert test.public_method_call_base_protected_method_call_public_method() == "This is a public method annotated with @public"
 
 def test_bare_derived():
     test = BareDerived()
     assert test.public_method_call_base_annotated_protected_method() == "This is a protected method annotated with @protected"
+    assert test.public_method_call_protected_method() == "This is a protected method annotated with @protected"
+    assert test.public_method_call_base_protected_method_call_private_method() == "This is a private method annotated with @private"
+    assert test.public_method_call_base_protected_method_call_public_method() == "This is a public method annotated with @public"
 
 def test_underived():
     test = Underived()

@@ -7,7 +7,7 @@ from pryvacy.decorators.utils import get_access_policy
 
 
 def init(cls: Type):
-    normal_methods = { name: method for name, method in inspect.getmembers(cls, inspect.isfunction) if not name.startswith("__") }
+    normal_methods = { name: method for name, method in cls.__dict__.items() if not name.startswith("__") and inspect.ismethod(method) }
     for name, _method in normal_methods.items():
         match get_access_policy(_method):
             case AccessPolicy.PUBLIC:
