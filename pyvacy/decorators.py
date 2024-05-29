@@ -13,7 +13,6 @@ class AccessPolicy(Enum):
     PRIVATE = 2
 
 def pyvacy(cls: Type[T]) -> Type[T]:
-
     normal_methods = [method for name, method in inspect.getmembers(cls, inspect.ismethod) if not name.startswith("__")]
 
     for method in normal_methods:
