@@ -28,7 +28,7 @@ class Foo():
   def protected_method(self):
     pass
 
-  @privaye
+  @private
   def private_method(self):
     pass
 ```
