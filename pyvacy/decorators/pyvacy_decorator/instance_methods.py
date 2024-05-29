@@ -17,7 +17,7 @@ def init(cls: Type):
             case AccessPolicy.PRIVATE:
                 def _local_private():
                     method = _method
-                    def protected_method(self, *args, **kwargs):
+                    def private_method(self, *args, **kwargs):
                         try:
                             assert get_current_class() == cls 
                         except Exception:
@@ -29,7 +29,7 @@ def init(cls: Type):
                         finally:
                             reset_cls_ctx()
 
-                    return protected_method
+                    return private_method
 
                 setattr(cls, name, _local_private())
 
