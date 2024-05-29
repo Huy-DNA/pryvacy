@@ -1,6 +1,7 @@
 import pytest
 
-from pyvacy import pyvacy, public, private, protected
+from pyvacy.decorators.access_decorators import private, protected, public
+from pyvacy.decorators.pyvacy_decorator import pyvacy
 
 def test():
     global Base
