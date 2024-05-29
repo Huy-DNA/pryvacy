@@ -4,8 +4,7 @@ from pyvacy import pyvacy, public, private, protected
 
 def test():
     global Base
-    global Derived
-    global Underived
+
     @pyvacy
     class Base():
         @public
@@ -38,7 +37,9 @@ def test():
         @protected
         def protected_method_call_public_method(self):
             return self.annotated_public_method()
-
+    
+    global Derived
+    
     @pyvacy
     class Derived(Base):
         @public
@@ -52,11 +53,32 @@ def test():
         @public
         def public_method_call_base_protected_method_call_public_method(self):
             return self.protected_method_call_public_method()
+    
+
+    global Underived
 
     @pyvacy
     class Underived():
         def public_method_call_protected_method(self):
             return Base().annotated_protected_method()
+
+    global Outer
+
+    @pyvacy
+    class Outer():
+        @private
+        def foo(self):
+            return "private outer foo"
+
+        class Inner1():
+            def foo(self):
+                return f"{Outer().foo()} public inner1 foo"
+
+        @pyvacy
+        class Inner2():
+            @public
+            def foo(self):
+                return f"{Outer().foo()} public inner2 foo"
 
 def test_public_methods():
     test = Base()
@@ -71,7 +93,7 @@ def test_private_methods():
         test.annotated_private_method()
         assert False
     except Exception as e:
-        assert f"{e}" == "'Base' object has no attribute 'annotated_private_method'"
+        assert f"{e}" == "'public_method_call_protected_method' method of Base is marked as private"
 
 def test_protected_methods():
     test = Base()
@@ -92,3 +114,7 @@ def test_underived():
         assert False
     except Exception as e:
         assert f"{e}" == "'public_method_call_protected_method' method of Base is marked as protected"
+
+def test_nested_classes():
+    assert Outer.Inner1().foo() == "private outer foo public inner1 foo"
+    assert Outer.Inner2().foo() == "private outer foo public inner2 foo"
