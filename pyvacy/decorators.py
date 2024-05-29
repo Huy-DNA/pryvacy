@@ -20,7 +20,7 @@ def pyvacy(cls: Type[T]) -> Type[T]:
         for _name, _method in normal_methods.items():
             match _get_access_policy(_method):
                 case AccessPolicy.PUBLIC:
-                    def _local():
+                    def _local_public():
                         method = _method
                         def public_method(*args, **kwargs):
                             _switch_dict(cls, exposed_dict, origin_dict)
@@ -28,17 +28,31 @@ def pyvacy(cls: Type[T]) -> Type[T]:
                             _switch_dict(cls, origin_dict, exposed_dict)
                             return result
                         return public_method
-                    setattr(cls, _name, _local())
+                    setattr(cls, _name, _local_public())
                         
                 case AccessPolicy.PRIVATE:
                     delattr(cls, _name)
                 
                 case AccessPolicy.PROTECTED:
-                    # TODO: Implement this correctly
-                    delattr(cls, _name)
+                    def _local_protected():
+                        method = _method
+                        __class__ = cls
+                        def protected_method(self, *args, **kwargs):
+                            try:
+                                super()
+                                assert isinstance(self, cls)
+                            except Exception as e:
+                                raise Exception(f"'{_name}' method of {cls.__name__} is marked as protected")
+                            _switch_dict(cls, exposed_dict, origin_dict)
+                            result = method(self, *args, **kwargs)
+                            _switch_dict(cls, origin_dict, exposed_dict)
+                            return result
+
+                        return protected_method
+                    setattr(cls, _name, _local_protected())
         
         exposed_dict = cls.__dict__.copy()
-
+        
     return cls
 
 def private(fn: Callable) -> Callable:
@@ -73,6 +87,3 @@ def _switch_dict(obj: object, rem_dict: dict, add_dict: dict):
             setattr(obj, name, method)
         except:
             pass
-
-def _mangle_method_name(cls: Type, fn: Callable, access_policy: AccessPolicy) -> str:
-    return f"@@_${cls.__name__}__${fn.__name__}__${access_policy}"
