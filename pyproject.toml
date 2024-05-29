@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pryvacy"
-version = "0.1.1"
+version = "0.1.2"
 description = "A set of access control descriptors for methods and nested classes"
 authors = ["Huy-DNA <huydo862003@gmail.com>"]
 readme = "README.md"
