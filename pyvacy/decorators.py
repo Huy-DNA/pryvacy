@@ -49,7 +49,22 @@ def pyvacy(cls: Type[T]) -> Type[T]:
                 setattr(cls, name, _local_public())
                         
             case AccessPolicy.PRIVATE:
-                delattr(cls, name)
+                def _local_private():
+                    method = _method
+                    def protected_method(self, *args, **kwargs):
+                        try:
+                            assert get_current_class() == cls 
+                        except Exception:
+                            raise Exception(f"'{name}' method of {cls.__name__} is marked as private")
+
+                        _switch_dict(cls, exposed_dict, origin_dict)
+                        result = method(self, *args, **kwargs)
+                        _switch_dict(cls, origin_dict, exposed_dict)
+                        return result
+
+                    return protected_method
+
+                setattr(cls, name, _local_private())
 
             case AccessPolicy.PROTECTED:
                 def _local_protected():
