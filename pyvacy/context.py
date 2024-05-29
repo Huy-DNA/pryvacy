@@ -1,5 +1,4 @@
-import inspect
-from typing import Callable, Optional, Type
+from typing import Optional, Type
 
 
 def _get_cls_ctx() -> Optional[Type]:
