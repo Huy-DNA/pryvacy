@@ -3,7 +3,7 @@ from enum import Enum
 
 from typing import Callable, TypeVar, Type
 
-from pyvacy.context import ClassContextManager
+from pyvacy.context import ClassContextManager, get_current_class
 
 T = TypeVar('T')
 
@@ -13,44 +13,64 @@ class AccessPolicy(Enum):
     PRIVATE = 2
 
 def pyvacy(cls: Type[T]) -> Type[T]:
-    with ClassContextManager(cls):
-        normal_methods = { name: method for name, method in inspect.getmembers(cls, inspect.isfunction) if not name.startswith("__") }
-        origin_dict = cls.__dict__.copy() 
-        
-        for _name, _method in normal_methods.items():
-            match _get_access_policy(_method):
-                case AccessPolicy.PUBLIC:
-                    def _local_public():
-                        method = _method
-                        def public_method(*args, **kwargs):
-                            _switch_dict(cls, exposed_dict, origin_dict)
-                            result = method(*args, **kwargs)
-                            _switch_dict(cls, origin_dict, exposed_dict)
-                            return result
-                        return public_method
-                    setattr(cls, _name, _local_public())
-                        
-                case AccessPolicy.PRIVATE:
-                    delattr(cls, _name)
-                
-                case AccessPolicy.PROTECTED:
-                    def _local_protected():
-                        method = _method
-                        def protected_method(self, *args, **kwargs):
-                            try:
-                                # TODO: correctly implement the check logic here
-                                pass 
-                            except Exception:
-                                raise Exception(f"'{_name}' method of {cls.__name__} is marked as protected")
-                            _switch_dict(cls, exposed_dict, origin_dict)
-                            result = method(self, *args, **kwargs)
-                            _switch_dict(cls, origin_dict, exposed_dict)
-                            return result
+    normal_methods = { name: method for name, method in inspect.getmembers(cls, inspect.isfunction) if not name.startswith("__") }
+    
+    for name, _method in normal_methods.items():
+        def _local():
+            method = _method
+            def wrapped_method(*args, **kwargs):
+                with ClassContextManager(cls):
+                    return method(*args, **kwargs)
+            _set_access_policy(wrapped_method, _get_access_policy(method))
+            return wrapped_method
+        normal_methods[name] = _local()
+        setattr(cls, name, normal_methods[name])
 
-                        return protected_method
-                    setattr(cls, _name, _local_protected())
-        
-        exposed_dict = cls.__dict__.copy()
+    origin_dict = cls.__dict__.copy()
+
+    for name, _method in normal_methods.items():
+        match _get_access_policy(_method):
+            case AccessPolicy.PUBLIC:
+                def _local_public():
+                    method = _method
+                    def public_method(*args, **kwargs):
+                        _switch_dict(cls, exposed_dict, origin_dict)
+                        result = method(*args, **kwargs)
+                        _switch_dict(cls, origin_dict, exposed_dict)
+                        return result
+                    return public_method
+
+                setattr(cls, name, _local_public())
+                        
+            case AccessPolicy.PRIVATE:
+                delattr(cls, name)
+
+            case AccessPolicy.PROTECTED:
+                def _local_protected():
+                    method = _method
+                    def protected_method(self, *args, **kwargs):
+                        try:
+                            assert issubclass(get_current_class(), cls) 
+                        except:
+                            raise Exception(f"'{name}' method of {cls.__name__} is marked as protected")
+                        _switch_dict(cls, exposed_dict, origin_dict)
+                        result = method(self, *args, **kwargs)
+                        _switch_dict(cls, origin_dict, exposed_dict)
+                        return result
+
+                    return protected_method
+
+                setattr(cls, name, _local_protected())
+
+    exposed_dict = cls.__dict__.copy()
+
+    old_init_subclass = cls.__init_subclass__
+    @classmethod
+    def init_subclass_wrapper(cls, **kwargs):
+        pyvacy(cls)
+        return old_init_subclass(**kwargs)
+
+    setattr(cls, "__init_subclass__", init_subclass_wrapper)
         
     return cls
 
