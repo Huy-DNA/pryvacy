@@ -104,7 +104,7 @@ def test_private_methods():
         test.annotated_private_method()
         assert False
     except Exception as e:
-        assert f"{e}" == "'public_method_call_protected_method' method of Base is marked as private"
+        assert f"{e}" == "'protected_method_call_public_method' method of Base is marked as private"
 
 def test_protected_methods():
     test = Base()
@@ -112,7 +112,7 @@ def test_protected_methods():
         test.annotated_protected_method()
         assert False
     except Exception as e:
-        assert f"{e}" == "'public_method_call_protected_method' method of Base is marked as protected"
+        assert f"{e}" == "'protected_method_call_public_method' method of Base is marked as protected"
 
 def test_pivacified_derived():
     test = PyvacifiedDerived()
@@ -134,7 +134,7 @@ def test_underived():
         test.public_method_call_protected_method()
         assert False
     except Exception as e:
-        assert f"{e}" == "'public_method_call_protected_method' method of Base is marked as protected"
+        assert f"{e}" == "'protected_method_call_public_method' method of Base is marked as protected"
 
 def test_nested_classes():
     assert Outer.Inner1().foo() == "private outer foo public inner1 foo"
