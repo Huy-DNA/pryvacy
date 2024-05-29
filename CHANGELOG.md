@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix: local function name ([28f59ee](https://github.com/Huy-DNA/pryvacy/commit/28f59ee2f6cd0772f8cee4912f05fac093adaf33) by Huy-DNA).
 - fix: use inspect.isfunction not ismethod ([54f0b36](https://github.com/Huy-DNA/pryvacy/commit/54f0b3629a841ef70faf044b295fae02e9cdbc58) by Huy-DNA).
 - fix: no longer use inspect.getmembers to avoid get inherited fields ([847f984](https://github.com/Huy-DNA/pryvacy/commit/847f98450c24d12abcc5c98041d7adf1dbee320f) by Huy-DNA).
 - fix: use stack instead for contexts ([82f350f](https://github.com/Huy-DNA/pryvacy/commit/82f350f8eab6aa3f621111046016fb7cbfbba61f) by Huy-DNA).
