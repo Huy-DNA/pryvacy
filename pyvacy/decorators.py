@@ -16,23 +16,28 @@ def pyvacy(cls: Type[T]) -> Type[T]:
     with ClassContextManager(cls):
         normal_methods = { name: method for name, method in inspect.getmembers(cls, inspect.isfunction) if not name.startswith("__") }
         origin_dict = cls.__dict__.copy() 
-
-        for name, method in normal_methods.items():
-            match _get_access_policy(method):
+        
+        for _name, _method in normal_methods.items():
+            match _get_access_policy(_method):
                 case AccessPolicy.PUBLIC:
-                    def public_method(*args, **kwargs):
-                        old_dict = cls.__dict__.copy()
-                        cls.__dict__ = origin_dict
-                        method(*args, **kwargs)
-                        cls.__dict__ = old_dict
-                    setattr(cls, name, public_method)
+                    def _local():
+                        method = _method
+                        def public_method(*args, **kwargs):
+                            _switch_dict(cls, exposed_dict, origin_dict)
+                            result = method(*args, **kwargs)
+                            _switch_dict(cls, origin_dict, exposed_dict)
+                            return result
+                        return public_method
+                    setattr(cls, _name, _local())
                         
                 case AccessPolicy.PRIVATE:
-                    delattr(cls, name)
-
+                    delattr(cls, _name)
+                
                 case AccessPolicy.PROTECTED:
                     # TODO: Implement this correctly
-                    delattr(cls, name)
+                    delattr(cls, _name)
+        
+        exposed_dict = cls.__dict__.copy()
 
     return cls
 
@@ -56,6 +61,18 @@ def _get_access_policy(fn: Callable) -> AccessPolicy:
 
 def _set_access_policy(fn: Callable, access_policy: AccessPolicy):
     fn.__dict__["@@_access_control"] = access_policy
+
+def _switch_dict(obj: object, rem_dict: dict, add_dict: dict):
+    for name in rem_dict:
+        try:
+            delattr(obj, name)
+        except:
+            pass
+    for name, method in add_dict.items():
+        try:
+            setattr(obj, name, method)
+        except:
+            pass
 
 def _mangle_method_name(cls: Type, fn: Callable, access_policy: AccessPolicy) -> str:
     return f"@@_${cls.__name__}__${fn.__name__}__${access_policy}"
