@@ -3,15 +3,14 @@ from enum import Enum
 
 from typing import Callable, TypeVar, Type
 
-from pyvacy.context import ClassContextManager, get_current_class
-
-T = TypeVar('T')
+from pyvacy.context import get_current_class, reset_cls_ctx, set_cls_ctx
 
 class AccessPolicy(Enum):
     PUBLIC = 0
     PROTECTED = 1
     PRIVATE = 2
 
+T = TypeVar('T')
 def pyvacy(cls: Type[T]) -> Type[T]:
     if "@@_pyvacified" in pyvacy.__dict__:
         return cls
@@ -23,8 +22,11 @@ def pyvacy(cls: Type[T]) -> Type[T]:
         def _local():
             method = _method
             def wrapped_method(*args, **kwargs):
-                with ClassContextManager(cls):
+                try:
+                    set_cls_ctx(cls, override = False)
                     return method(*args, **kwargs)
+                finally:
+                    reset_cls_ctx() 
             _set_access_policy(wrapped_method, _get_access_policy(method))
             return wrapped_method
         normal_methods[name] = _local()
