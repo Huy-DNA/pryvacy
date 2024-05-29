@@ -15,6 +15,6 @@ def init(cls: Type):
             case AccessPolicy.PUBLIC:
                 pyvacy(nested_cls)
             case AccessPolicy.PRIVATE:
-                pass
+                raise NotImplemented("Can not annotate nested classes with @private yet")
             case AccessPolicy.PROTECTED:
-                pass
+                raise NotImplemented("Can not annotate nested classes with @protected yet")
