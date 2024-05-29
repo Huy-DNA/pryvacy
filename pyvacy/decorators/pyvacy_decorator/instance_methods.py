@@ -30,7 +30,8 @@ def init(cls: Type):
                     method = _method
                     def private_method(self, *args, **kwargs):
                         try:
-                            assert get_current_class() == cls 
+                            current_class = get_current_class()
+                            assert current_class and (current_class == cls or cls.__dict__[current_class.__name__] == current_class)
                         except Exception:
                             raise Exception(f"'{name}' method of {cls.__name__} is marked as private")
 
@@ -50,7 +51,7 @@ def init(cls: Type):
                     def protected_method(self, *args, **kwargs):
                         try:
                             current_class = get_current_class()
-                            assert current_class and issubclass(current_class, cls) 
+                            assert current_class and (issubclass(current_class, cls) or cls.__dict__[current_class.__name__] == current_class)
                         except Exception:
                             raise Exception(f"'{name}' method of {cls.__name__} is marked as protected")
 
