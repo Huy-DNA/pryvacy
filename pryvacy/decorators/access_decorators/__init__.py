@@ -1,7 +1,7 @@
 from typing import Callable
 
-from pyvacy.access_policy import AccessPolicy
-from pyvacy.decorators.utils import set_access_policy
+from pryvacy.access_policy import AccessPolicy
+from pryvacy.decorators.utils import set_access_policy
 
 
 def private(fn: Callable) -> Callable:

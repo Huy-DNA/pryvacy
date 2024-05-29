@@ -1,9 +1,9 @@
 import inspect
 from typing import Type
 
-from pyvacy.access_policy import AccessPolicy
-from pyvacy.context import reset_cls_ctx, set_cls_ctx, get_current_class
-from pyvacy.decorators.utils import get_access_policy 
+from pryvacy.access_policy import AccessPolicy
+from pryvacy.context import reset_cls_ctx, set_cls_ctx, get_current_class
+from pryvacy.decorators.utils import get_access_policy 
 
 
 def init(cls: Type):

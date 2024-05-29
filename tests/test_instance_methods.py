@@ -1,11 +1,11 @@
 import pytest
 
-from pyvacy import private, protected, public, pyvacy
+from pryvacy import private, protected, public, pryvacy
 
 def test():
     global Base
 
-    @pyvacy
+    @pryvacy
     class Base():
         @public
         def annotated_public_method(self):
@@ -40,7 +40,7 @@ def test():
     
     global PyvacifiedDerived
     
-    @pyvacy
+    @pryvacy
     class PyvacifiedDerived(Base):
         @public
         def public_method_call_base_annotated_protected_method(self):
@@ -68,14 +68,14 @@ def test():
     
     global Underived
 
-    @pyvacy
+    @pryvacy
     class Underived():
         def public_method_call_protected_method(self):
             return Base().annotated_protected_method()
 
     global Outer
 
-    @pyvacy
+    @pryvacy
     class Outer():
         @private
         def foo(self):
@@ -85,7 +85,7 @@ def test():
             def foo(self):
                 return f"{Outer().foo()} public inner1 foo"
 
-        @pyvacy
+        @pryvacy
         class Inner2():
             @public
             def foo(self):

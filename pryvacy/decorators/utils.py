@@ -1,6 +1,6 @@
 from typing import Callable, Type, Union
 
-from pyvacy.access_policy import AccessPolicy
+from pryvacy.access_policy import AccessPolicy
 
 
 def get_access_policy(obj: Union[Callable, Type]) -> AccessPolicy:

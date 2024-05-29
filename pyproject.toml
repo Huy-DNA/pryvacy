@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "pyvacy"
-version = "0.1.0"
+name = "pryvacy"
+version = "0.1.1"
 description = "A set of access control descriptors for methods and nested classes"
 authors = ["Huy-DNA <huydo862003@gmail.com>"]
 readme = "README.md"
@@ -13,5 +13,5 @@ python = "^3.10"
 pytest = "^8.2.1"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.8.0"]
 build-backend = "poetry.core.masonry.api"
