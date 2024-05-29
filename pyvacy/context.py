@@ -6,7 +6,7 @@ globals["@@_current_class"] = None
 last_cls = None
 
 def set_cls_ctx(cls: Type, override = False):
-    if override and get_current_class():
+    if not override and get_current_class():
         return
     
     global last_cls
