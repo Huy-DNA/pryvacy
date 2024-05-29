@@ -1,6 +1,5 @@
 import pytest
 
-from pyvacy.context import get_current_class
 from pyvacy.decorators.access_decorators import private, protected, public
 from pyvacy.decorators.pyvacy_decorator import pyvacy
 
