@@ -1,6 +1,7 @@
 from typing import Type, TypeVar
 
 from pyvacy.decorators.pyvacy_decorator import instance_methods
+from pyvacy.decorators.pyvacy_decorator import nested_classes
 
 
 T = TypeVar('T')
@@ -10,7 +11,8 @@ def pyvacy(cls: Type[T]) -> Type[T]:
     setattr(cls, "@@_pyvacified", ())
 
     instance_methods.init(cls)
-
+    nested_classes.init(cls)
+    
     old_init_subclass = cls.__init_subclass__
     @classmethod
     def init_subclass_wrapper(cls, **kwargs):
