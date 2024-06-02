@@ -1,5 +1,7 @@
 # pryvacy - a set of access control decorators for python
 
+[![PyPI Version](https://img.shields.io/pypi/v/pryvacy.svg)](https://pypi.python.org/pypi/pryvacy)
+
 ## Philosophy
 
 * Incur as least overhead as possible when using the access control decorators
